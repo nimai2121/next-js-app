@@ -63,7 +63,7 @@ export default function DailyThought() {
 
              <div className= "mt-5 space-y-3 text-left">
                 {thoughts.length === 0 ? (<p className = "italic text-center">no thoughts yet, start typing</p>) : (
-                    thoughts.map((thought, index) => ( 
+                    thoughts.slice(0,5).map((thought, index) => ( 
                         <div 
                             key = {index}
                             className= "bg-white/20 p-3 rounded-lg shadow-sm"> 
