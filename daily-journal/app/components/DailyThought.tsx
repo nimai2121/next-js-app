@@ -1,6 +1,19 @@
 "use client";
 import React, {useState, useEffect} from "react";
-import {useFormState} from "react-dom";
+//import {useFormState} from "react-dom";
+//import "thoughts/page.tsx";
+
+type Thought = {
+    text: string; 
+    time: string; 
+    competencies: number[];
+};
+
+type Competency =  {
+    id: number; 
+    skill: string;
+    description: string;
+};
 
 export default function DailyThought() {
     // input is the variable and setInput updates the variable
