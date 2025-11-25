@@ -16,7 +16,7 @@ export async function GET() {
             database: process.env.DB,
         });
         
-        const[rows] = await connection.execute("SELECT id, skill, description FROM Competency");
+        const[rows] = await connection.execute("SELECT id, skill, description FROM Competency ORDER BY skill ASC");
    
         return NextResponse.json(rows);
 

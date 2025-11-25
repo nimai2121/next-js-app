@@ -20,6 +20,18 @@ export default function DailyThought() {
     const [input, setInput] = useState(""); 
     const [thoughts, setThoughts] = 
     useState<{text: string; time: string}[]>([]);
+    const [competencies, setCompetencies] = useState<Competency[]>([]);
+    const [selected, setSelected] = useState<number[]>([]);
+
+    // Load competencies from API
+    useEffect(() => {
+        async function fetchCompetencies(){
+            const res = await fetch("/api/competencies");
+            const data = await res.json();
+            setCompetencies(data);
+        }
+        fetchCompetencies();
+    }, []);
 
     //load thoughts from local storage on page load
     useEffect(() => {
@@ -52,12 +64,17 @@ export default function DailyThought() {
             minute: "2-digit",
         });
 
-        const newThought = {text: input, time: timestamp};
+        const newThought = {text: input, time: timestamp, competencies: selected};
         setThoughts([newThought, ...thoughts]); //add new thought to the thoughts collection.
         setInput(""); //
 
     }
 
+    const toggleCompetency = (id: number) => {
+        setSelected((prev) =>
+            prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+        );
+    };
 
     return (
         <div className="bg-[#ff0000] text-white p-6 rounded-xl shadow-md text-center max-w-md w-full">
@@ -68,6 +85,28 @@ export default function DailyThought() {
                 placeholder="Type your thoughts for the day..."
                 className = "w-full p-2 rounded-md text-white focus: outline-none"
              />
+             <div className = "mt-4 text-left">
+                <h3 className= "font-semibold mb-2">Employability Competencies</h3>
+                <div className = "space-y-1">
+                {
+                    competencies.map((comp) => (
+                        <label
+                            key={comp.id}
+                            title={comp.description}
+                            className="flex items-center gap-2 cursor-pointer"
+                    >
+                        <input
+                            className="cursor-point"
+                            type="checkbox"
+                            checked={selected.includes(comp.id)}
+                            onChange={() => {toggleCompetency(comp.id)}}
+                        />
+                        <span>{comp.skill}</span>
+                    </label>
+                    )
+                )}
+            </div>
+             </div>
              <button 
                 onClick = {handleSave}
                 className = "mt-3 bg-white text-[#ff0000] px-4 py-2 rounded-md font-semibold hover:bg-[#000000] transition-colors cursor-pointer">
@@ -82,6 +121,13 @@ export default function DailyThought() {
                             className= "bg-white/20 p-3 rounded-lg shadow-sm"> 
                             <p className = "text-lg"> {thought.text} </p>
                             <p className = "text-sm opacity-80 mt-1">{thought.time}</p>
+                            {thought.competencies.length > 0 && (
+                                <p className = "text-sm mt-1">
+                                    <strong>Competencies</strong>
+                                    
+                                    
+                                </p>
+                            )}
                         </div>
                 ))
             )}   
