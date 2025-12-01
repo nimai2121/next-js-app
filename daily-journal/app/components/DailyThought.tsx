@@ -19,7 +19,7 @@ export default function DailyThought() {
     // input is the variable and setInput updates the variable
     const [input, setInput] = useState(""); 
     const [thoughts, setThoughts] = 
-    useState<{text: string; time: string}[]>([]);
+    useState<{text: string; time: string, competencies: number[]}[]>([]);
     const [competencies, setCompetencies] = useState<Competency[]>([]);
     const [selected, setSelected] = useState<number[]>([]);
 
@@ -123,9 +123,10 @@ export default function DailyThought() {
                             <p className = "text-sm opacity-80 mt-1">{thought.time}</p>
                             {thought.competencies.length > 0 && (
                                 <p className = "text-sm mt-1">
-                                    <strong>Competencies</strong>
-                                    
-                                    
+                                    <strong>Competencies: </strong>
+                                    {thought.competencies.map((id) =>
+                                        competencies.find((c) => c.id === id)?.skill || `#${id}`).join(", ")
+                                    }
                                 </p>
                             )}
                         </div>
