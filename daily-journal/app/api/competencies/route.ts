@@ -1,6 +1,8 @@
 import {NextResponse} from "next/server";
 //import mysql from "mysql2/promise";
 import connection from "@/app/lib/db";
+import { authOptions } from "../auth/[...nextauth]/authOptions";
+import { getServerSession } from "next-auth/next";
 
 //A GET function returns some data based on a request.
 export async function GET() {
@@ -27,5 +29,7 @@ export async function GET() {
         console.log(err);
         return NextResponse.json({error: "Failed to fetch competencies."}, {status: 500});
     }
+
+    
 
 }
