@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 type Thought = {
     text: string;
@@ -13,25 +13,54 @@ type Competency = {
     description: string;
 };
 
-export default function thoughts() {
+type EntryFromDB = {
+    id: number;
+    text: string;
+    createdAt: string;
+    competencies: number[];
+}
+
+// A page.tsx file is just a React component similar to DailyThought.tsx
+// The difference is it is stored within a directory and the path to that directory will load the component
+// In this case, the path is /thoughts
+export default function Thoughts() {
     const [thoughts, setThoughts] = useState<Thought[]>([]);
     const [competencies, setCompetencies] = useState<Competency[]>([]);
     
-    // Load thoughts from localStorage on page load
+    // Load thoughts from the database using our GET route
     useEffect(() => {
-        const savedThoughts = localStorage.getItem("dailyThoughts");
-        if (savedThoughts) {
-            setThoughts(JSON.parse(savedThoughts));
+        async function loadThoughts() {
+            const res = await fetch("/api/entry");
+            
+            if (!res.ok) return;
+            const data: EntryFromDB[] = await res.json();
+            
+            // Transform the response into a Thought
+            const formatted: Thought[] = data.map((row) => (
+                {
+                    text: row.text,
+                    time: new Date(row.createdAt).toLocaleString("en-US", {
+                        month: "short",
+                        day: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    }),
+                    competencies: row.competencies,
+                }
+            ));
+            setThoughts(formatted);
         }
-    }, []); // Empty dependency array = runs only once on component mount
+        loadThoughts();
+    }, []);
 
     useEffect(() => {
-            async function fetchCompetencies() {
-                const res = await fetch("/api/competencies");
-                const data = await res.json();
-                setCompetencies(data);
-            }
-            fetchCompetencies();
+        async function fetchCompetencies() {
+            const res = await fetch("/api/competencies");
+            const data = await res.json();
+            setCompetencies(data);
+        }
+        fetchCompetencies();
     }, []);
 
     return (
